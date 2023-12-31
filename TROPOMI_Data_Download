@@ -1,0 +1,96 @@
+var startDate = ee.Date('2023-11-09');
+var endDate = ee.Date('2023-11-12');
+
+// Initialize an empty list to store the dates
+var dateList = [];
+
+// Generate a sequence of dates between the start and end dates
+for (var i = 0; i <= endDate.difference(startDate, 'day').getInfo(); i++) {
+  var currentDate = startDate.advance(i, 'day');
+  dateList.push(currentDate);
+}
+
+// Define the region of interest (ROI) for India
+var india = ee.Geometry.Polygon(
+  [[[68.111084, 7.96553],
+    [97.04103, 7.96553],
+    [97.04103, 35.674161],
+    [68.111084, 35.674161],
+    [68.111084, 7.96553]]]);
+
+
+print(dateList)
+// Export the image collection as a single GeoTIFF with all images
+
+// Print each date in the sequence
+dateList.forEach(function(date) {
+  var formattedDate = date.format('yyyy-MM-dd');
+  var nextDay = date.advance(1, 'day').format('yyyy-MM-dd');
+  print('Date:', formattedDate);
+  var collection = ee.ImageCollection('COPERNICUS/S5P/NRTI/L3_CO')
+  .select('CO_column_number_density')
+  .filterDate(formattedDate, nextDay);
+  Export.image.toDrive({
+  image: collection.mean(),
+  description: 'TROPOMI_CO_'+formattedDate.getInfo(),
+  folder: 'TROPOMI',  // Specify the folder in your Google Drive where you want to save the file
+  scale: 5000,  // Adjust the scale according to your needs (e.g., 5000 meters)
+  region: india,  // Set the region of interest to India
+  fileFormat: 'GeoTIFF'});
+  //print(collection)
+});
+
+//var collection = ee.ImageCollection('COPERNICUS/S5P/OFFL/L3_AER_AI')
+//  .select('absorbing_aerosol_index')
+//  .filterDate(formattedDate, nextDay);
+dateList.forEach(function(date) {
+  var formattedDate = date.format('yyyy-MM-dd');
+  var nextDay = date.advance(1, 'day').format('yyyy-MM-dd');
+  print('Date:', formattedDate);
+  var collection = ee.ImageCollection('COPERNICUS/S5P/NRTI/L3_AER_AI')
+  .select('absorbing_aerosol_index')
+  .filterDate(formattedDate, nextDay);
+  Export.image.toDrive({
+  image: collection.mean(),
+  description: 'TROPOMI_AI_'+formattedDate.getInfo(),
+  folder: 'TROPOMI',  // Specify the folder in your Google Drive where you want to save the file
+  scale: 5000,  // Adjust the scale according to your needs (e.g., 5000 meters)
+  region: india,  // Set the region of interest to India
+  fileFormat: 'GeoTIFF'});
+  //print(collection)
+});
+
+dateList.forEach(function(date) {
+  var formattedDate = date.format('yyyy-MM-dd');
+  var nextDay = date.advance(1, 'day').format('yyyy-MM-dd');
+  print('Date:', formattedDate);
+  var collection = ee.ImageCollection('COPERNICUS/S5P/NRTI/L3_NO2')
+  .select('tropospheric_NO2_column_number_density')
+  .filterDate(formattedDate, nextDay);
+  Export.image.toDrive({
+  image: collection.mean(),
+  description: 'TROPOMI_NO2_'+formattedDate.getInfo(),
+  folder: 'TROPOMI',  // Specify the folder in your Google Drive where you want to save the file
+  scale: 5000,  // Adjust the scale according to your needs (e.g., 5000 meters)
+  region: india,  // Set the region of interest to India
+  fileFormat: 'GeoTIFF'});
+  //print(collection)
+});
+
+dateList.forEach(function(date) {
+  var formattedDate = date.format('yyyy-MM-dd');
+  var nextDay = date.advance(1, 'day').format('yyyy-MM-dd');
+  print('Date:', formattedDate);
+  var collection = ee.ImageCollection('COPERNICUS/S5P/OFFL/L3_SO2')
+  .select('SO2_column_number_density')
+  .filterDate(formattedDate, nextDay);
+  Export.image.toDrive({
+  image: collection.mean(),
+  description: 'TROPOMI_SO2_'+formattedDate.getInfo(),
+  folder: 'TROPOMI',  // Specify the folder in your Google Drive where you want to save the file
+  scale: 5000,  // Adjust the scale according to your needs (e.g., 5000 meters)
+  region: india,  // Set the region of interest to India
+  fileFormat: 'GeoTIFF'});
+  //print(collection)
+});
+
